@@ -1,6 +1,9 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 interface InitialStateType {
   username: string;
   email: string;
@@ -13,15 +16,29 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setSignUpData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(signUpData);
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/users/signup", signUpData);
+      if (res.status === 200) {
+        toast.success("user created sucessfully");
+      }
+      // console.log("signup process", res.data);
+      router.push("/login");
+    } catch (error) {
+      toast.error("Something Went Wrong");
+      console.log("signup error", error);
+    } finally {
+      setLoading(false);
+    }
   };
   // console.log(signUpData);
 
@@ -62,7 +79,11 @@ const SignUp = () => {
           required
         />
 
-        <button className="btn btn-info uppercase mt-2">SignUp</button>
+        <button className={`btn  btn-info uppercase mt-2 `} disabled={loading}>
+          {loading && <span className="loading loading-spinner"></span>}
+          SignUp
+        </button>
+
         <div>
           Have an account?
           <Link href={"/login"} className="text-blue-400 font-semibold">

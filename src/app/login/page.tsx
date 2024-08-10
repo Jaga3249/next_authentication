@@ -1,6 +1,9 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 interface InitialStateType {
   email: string;
   password: string;
@@ -11,17 +14,29 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setLoginData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(loginData);
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/users/login", loginData);
+      if (res.status === 200) {
+        toast.success("user loggedIn sucessfully");
+        router.push("/profile");
+      }
+    } catch (error) {
+      toast.error("Something Went Wrong");
+      console.log("login error", error);
+    } finally {
+      setLoading(false);
+    }
   };
-  // console.log(signUpData);
 
   return (
     <div className=" h-screen flex justify-center items-center">
@@ -50,7 +65,10 @@ const Login = () => {
           onChange={handleChange}
           required
         />
-        <button className="btn btn-info uppercase  mt-2">login</button>
+        <button className="btn btn-info uppercase  mt-2" disabled={loading}>
+          {loading && <span className="loading loading-spinner"></span>}
+          login
+        </button>
         <div>
           Don't have an account?
           <Link href={"/signup"} className="text-blue-400 font-semibold">
