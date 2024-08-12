@@ -69,12 +69,17 @@ const Login = () => {
           {loading && <span className="loading loading-spinner"></span>}
           login
         </button>
-        <div>
-          Don't have an account?
-          <Link href={"/signup"} className="text-blue-400 font-semibold">
-            {" "}
-            signup
-          </Link>
+        <div className="flex justify-between items-center">
+          <div className="text-sm font-semibold">
+            Don't have an account?
+            <Link href={"/signup"} className="text-blue-400 font-semibold">
+              {" "}
+              signup
+            </Link>
+          </div>
+          <p className="text-sm font-mono font-semibold">
+            <Link href={"/sendpasswordresetemail"}>Forgot password</Link>
+          </p>
         </div>
       </form>
     </div>

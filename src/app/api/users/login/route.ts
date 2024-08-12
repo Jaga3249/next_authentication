@@ -38,6 +38,6 @@ export const POST = async (request: NextRequest) => {
     });
     return response;
   } catch (error: any) {
-    console.log("login error", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };
